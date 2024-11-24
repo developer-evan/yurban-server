@@ -137,44 +137,6 @@ export const updateStatus = async (
   }
 };
 
-export const getUsers = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<any> => {
-  try {
-    // Fetch all users
-    const users = await UserModel.find({}, "-pin"); // Exclude PIN for security
-
-    // Map users to include their rides
-    const usersWithRides = await Promise.all(
-      users.map(async (user) => {
-        // Get rides where the user is either a customer or a driver
-        const rides =
-          user.role === "Driver"
-            ? await RideModel.find({ driverId: user._id }).populate(
-                "customerId",
-                "-pin" // Populate customer details but exclude sensitive data
-              )
-            : await RideModel.find({ customerId: user._id }).populate(
-                "driverId",
-                "-pin" // Populate driver details but exclude sensitive data
-              );
-
-        const userObject = user.toObject();
-        return {
-          ...userObject,
-          rides, // Attach the rides to the user object
-        };
-      })
-    );
-
-    res.status(200).json(usersWithRides);
-  } catch (error) {
-    next(error);
-  }
-};
-
 // export const getUsers = async (
 //   req: Request,
 //   res: Response,
@@ -184,20 +146,58 @@ export const getUsers = async (
 //     // Fetch all users
 //     const users = await UserModel.find({}, "-pin"); // Exclude PIN for security
 
-//     // Map the users to display the status only for drivers
-//     const usersWithFilteredStatus = users.map((user) => {
-//       const userObject = user.toObject();
-//       if (user.role !== "Driver") {
-//         delete userObject.status; // Remove the status field for non-drivers
-//       }
-//       return userObject;
-//     });
+//     // Map users to include their rides
+//     const usersWithRides = await Promise.all(
+//       users.map(async (user) => {
+//         // Get rides where the user is either a customer or a driver
+//         const rides =
+//           user.role === "Driver"
+//             ? await RideModel.find({ driverId: user._id }).populate(
+//                 "customerId",
+//                 "-pin" // Populate customer details but exclude sensitive data
+//               )
+//             : await RideModel.find({ customerId: user._id }).populate(
+//                 "driverId",
+//                 "-pin" // Populate driver details but exclude sensitive data
+//               );
 
-//     res.status(200).json(usersWithFilteredStatus);
+//         const userObject = user.toObject();
+//         return {
+//           ...userObject,
+//           rides, // Attach the rides to the user object
+//         };
+//       })
+//     );
+
+//     res.status(200).json(usersWithRides);
 //   } catch (error) {
 //     next(error);
 //   }
 // };
+
+export const getUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    // Fetch all users
+    const users = await UserModel.find({}, "-pin"); // Exclude PIN for security
+
+    // Map the users to display the status only for drivers
+    const usersWithFilteredStatus = users.map((user) => {
+      const userObject = user.toObject();
+      if (user.role !== "Driver") {
+        delete userObject.status; // Remove the status field for non-drivers
+      }
+      return userObject;
+    });
+
+    res.status(200).json(usersWithFilteredStatus);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // export const getUsers = async (
 //   req: Request,

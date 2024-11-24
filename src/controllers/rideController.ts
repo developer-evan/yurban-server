@@ -34,6 +34,7 @@ export const requestRide = async (
     next(error);
   }
 };
+
 // get customer rides from the database
 export const getCustomerRides = async (
   req: Request,
@@ -141,3 +142,36 @@ export const updateRideStatus = async (
     next(error);
   }
 };
+
+// get all rides from the database
+// export const getAllRides = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ): Promise<any> => {
+//   try {
+//     const rides = await RideModel.find().populate("customerId", "-pin").populate("driverId", "-pin");
+//     res.status(200).json(rides);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
+export const getAllRides = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    // Fetch all rides and populate driver and customer details (excluding sensitive info)
+    const rides = await RideModel.find()
+      .populate("driverId", "-pin") // Exclude the driver's PIN
+      .populate("customerId", "-pin"); // Exclude the customer's PIN
+
+    res.status(200).json(rides);
+  } catch (error) {
+    next(error);
+  }
+};
+
