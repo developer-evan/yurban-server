@@ -143,6 +143,78 @@ export const updateRideStatus = async (
   }
 };
 
+export const completeRide = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const { rideId } = req.params;
+    const userId = req.user?.id; // Assuming `req.user` contains authenticated user info
+
+    // Fetch the ride from the database
+    const ride = await RideModel.findOne({ _id: rideId });
+
+    if (!ride) {
+      return res.status(404).json({ message: "Ride not found" });
+    }
+
+    // Ensure only the assigned driver can complete the ride
+    if (ride.driverId.toString() !== userId) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    // Check if the ride status is "Accepted"
+    if (ride.status !== "Accepted") {
+      return res
+        .status(400)
+        .json({
+          message: "Ride can only be completed from the 'Accepted' status",
+        });
+    }
+
+    // Update the status to "Completed" and set the timestamp
+    ride.status = "Completed";
+    ride.completedAt = new Date();
+
+    await ride.save();
+
+    res.status(200).json({ message: "Ride completed successfully", ride });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// export const completeRide = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ): Promise<any> => {
+//   try {
+//     const { rideId } = req.params;
+//     const userId = req.user?.id; // Assuming `req.user` contains authenticated user info
+
+//     const ride = await RideModel.findOne({ _id: rideId });
+//     if (!ride) {
+//       return res.status(404).json({ message: "Ride not found" });
+//     }
+
+//     // Check if the user is the driver
+//     if (ride.driverId.toString() !== userId) {
+//       return res.status(403).json({ message: "Unauthorized" });
+//     }
+
+//     // Update ride status to "Completed" and set completedAt timestamp
+//     ride.status = "Completed";
+//     ride.completedAt = new Date();
+
+//     await ride.save();
+//     res.status(200).json({ message: "Ride completed successfully", ride });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 // get all rides from the database
 // export const getAllRides = async (
 //   req: Request,
@@ -156,7 +228,6 @@ export const updateRideStatus = async (
 //     next(error);
 //   }
 // };
-
 
 export const getAllRides = async (
   req: Request,
@@ -174,4 +245,3 @@ export const getAllRides = async (
     next(error);
   }
 };
-

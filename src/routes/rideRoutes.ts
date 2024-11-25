@@ -6,6 +6,7 @@ import {
   getCustomerRides,
   getSingleRide,
   getAllRides,
+  completeRide,
 } from "../controllers/rideController";
 import { authenticateUser, authorizeUser } from "../middleware/authMiddleware";
 
@@ -20,6 +21,9 @@ router.patch("/rides/:rideId", authenticateUser, updateRideStatus); // Driver up
 router.get("/rides", authenticateUser, getCustomerRides);
 // single ride get
 router.get("/rides/:rideId", authenticateUser, getSingleRide);
+
+// Complete Ride Route
+router.patch("/rides/:rideId/complete", authenticateUser, completeRide);
 
 export default router;
 

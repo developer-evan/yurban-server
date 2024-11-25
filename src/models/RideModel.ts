@@ -6,10 +6,11 @@ interface RideDocument extends Document {
   pickupLocation: string;
   dropoffLocation: string;
   passengerNumber: number;
-  status: "Pending" | "Accepted" | "Rejected"; // Default to "Pending"
+  status: "Pending" | "Accepted" | "Rejected" | "Completed";
   requestedAt: Date;
   acceptedAt?: Date;
   rejectedAt?: Date;
+  completedAt?: Date;
 }
 
 const rideSchema = new Schema<RideDocument>(
@@ -21,12 +22,13 @@ const rideSchema = new Schema<RideDocument>(
     dropoffLocation: { type: String, required: true },
     status: {
       type: String,
-      enum: ["Pending", "Accepted", "Rejected"],
+      enum: ["Accepted", "Rejected", "Pending", "Completed"],
       default: "Pending",
     },
     requestedAt: { type: Date, default: Date.now },
     acceptedAt: { type: Date },
     rejectedAt: { type: Date },
+    completedAt: { type: Date },
   },
   { timestamps: true }
 );
