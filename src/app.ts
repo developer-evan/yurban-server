@@ -45,7 +45,7 @@ const swaggerOptions = {
     schemes: ["http", "https"],
     servers: [
       {
-        url: `http://localhost:${PORT}`,
+        url: `https://yurban-server-2.onrender.com`,
       },
     ],
     components: {
