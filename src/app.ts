@@ -40,12 +40,12 @@ const swaggerOptions = {
       contact: {
         name: "Developer Evans",
       },
-      servers: [`https://yurban-server-2.onrender.com`],
+      servers: [`http://localhost:${PORT}`],
     },
     schemes: ["http", "https"],
     servers: [
       {
-        url: `https://yurban-server-2.onrender.com`,
+        url: `http://localhost:${PORT}`,
       },
     ],
     components: {
@@ -73,5 +73,5 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`Swagger docs available at https://yurban-server-2.onrender.com/api-docs`);
+  console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
 });
